@@ -167,7 +167,7 @@ Flags:
 ```
 -B, --all-branches=false: Push all branches on specific commit instead of just working branch
 -b, --branch-tags=true: Push the 'branch' docker tags
--c, --commit-tags=false: Push the 'commit' docker tags
+-c, --commit-tags=false: Push the 'commit' docker tags. If branch-tags=true, it also pulls the 'branch-commit' docker tags
 ```
 
 ### pull
@@ -183,7 +183,7 @@ Flags:
 ```
 -B, --all-branches=false: Pull all branches on specific commit instead of just working branch
 -b, --branch-tags=true: Pull the 'branch' docker tags
--c, --commit-tags=false: Pull the 'commit' docker tags
+-c, --commit-tags=false: Pull the 'commit' docker tags. If branch-tags=true, it also pulls the 'branch-commit' docker tags
 ```
 
 ### self-update
@@ -216,7 +216,7 @@ The following is the workflow of tagging Docker images according to git state.
 
 - If you're in non-git repository, captain will tag the built images with `latest`.
 - If you're in dirty-git repository, captain will tag the built images with `latest`.
-- If you're in pristine-git repository, captain will tag the built images with `latest`, `commit-id`, `branch-name`, `tag-name`. A maximum of one tag per commit id is supported.
+- If you're in pristine-git repository, captain will tag the built images with `latest`, `commit-id`, `branch-name`, `branch-name-commit-id`, `tag-name`. A maximum of one tag per commit id is supported.
 
 ## Roadmap
 

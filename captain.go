@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // Debug can be turned on to enable debug mode.
@@ -98,6 +99,10 @@ func Build(opts BuildOptions) {
 					if res != nil {
 						os.Exit(TagFailed)
 					}
+					res = tagImage(app, rev, branch+"-"+rev)
+					if res != nil {
+						os.Exit(TagFailed)
+					}
 				}
 
 				// Add additional user-defined Tag
@@ -126,6 +131,10 @@ func Build(opts BuildOptions) {
 					// Tag branch image
 					for _, branch := range getBranches(opts.All_branches) {
 						res := tagImage(app, "latest", branch)
+						if res != nil {
+							os.Exit(TagFailed)
+						}
+						res = tagImage(app, rev, branch+"-"+rev)
 						if res != nil {
 							os.Exit(TagFailed)
 						}
@@ -199,6 +208,15 @@ func Push(opts BuildOptions) {
 					os.Exit(ExecuteFailed)
 				}
 			}
+			if opts.Branch_tags && opts.Commit_tags {
+				rev := getRevision(opts.Long_sha)
+				branchRevTag := branch + "-" + rev
+				info("Pushing image %s:%s", app.Image, branchRevTag)
+				if res := pushImage(app.Image, branchRevTag); res != nil {
+					err("Push returned non-zero status")
+					os.Exit(ExecuteFailed)
+				}
+			}
 
 			// Add additional user-defined Tag
 			if opts.Tag != "" {
@@ -234,6 +252,15 @@ func Pull(opts BuildOptions) {
 				rev := getRevision(opts.Long_sha)
 				info("Pulling image %s:%s", app.Image, rev)
 				if res := pullImage(app.Image, rev); res != nil {
+					err("Pull returned non-zero status")
+					os.Exit(ExecuteFailed)
+				}
+			}
+			if opts.Branch_tags && opts.Commit_tags {
+				rev := getRevision(opts.Long_sha)
+				branchRevTag := branch + "-" + rev
+				info("Pulling image %s:%s", app.Image, branchRevTag)
+				if res := pullImage(app.Image, branchRevTag); res != nil {
 					err("Pull returned non-zero status")
 					os.Exit(ExecuteFailed)
 				}
@@ -282,6 +309,9 @@ func Purge(opts BuildOptions) {
 		for _, branch := range getBranches(opts.All_branches) {
 			for key, tag := range tags {
 				if tag == app.Image+":"+branch {
+					tags = append(tags[:key], tags[key+1:]...)
+				}
+				if strings.Contains(tag, app.Image+":"+branch+"-") {
 					tags = append(tags[:key], tags[key+1:]...)
 				}
 			}
