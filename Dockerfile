@@ -7,6 +7,6 @@ RUN CGO_ENABLED=0 go build -a -tags netgo -ldflags '-w -extldflags "-static"' -o
 RUN chmod +x /captain
 
 FROM alpine:3.8
-RUN apk add --update-cache docker git
+RUN apk add --update-cache docker git ssh
 COPY --from=build /captain /bin/captain
 ENTRYPOINT [ "/bin/captain" ]
