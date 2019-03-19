@@ -19,6 +19,8 @@ before_install:
 
 install: true
 
+after_script: git diff --exit-code
+
 # calls goreleaser
 deploy:
 - provider: script
