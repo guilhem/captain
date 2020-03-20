@@ -1,0 +1,36 @@
+ 
+name: release
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  release:
+    name: Goreleaser
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Install snapcraft
+        run: sudo snap install snapcraft --classic
+      - name: Add snapcraft to PATH
+        run: sudo ln -fs /snap/bin/snapcraft /usr/local/bin/snapcraft
+      - name: Snapcraft login
+        run: echo "${{ secrets.SNAPCRAFT_TOKEN }}" | snapcraft login --with -
+      - uses: azure/docker-login@v1
+        with:
+          username: "guilhem"
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v1
+        with:
+          args: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GO111MODULE: on

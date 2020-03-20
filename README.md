@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/harbur/captain.svg?branch=master)](https://travis-ci.org/harbur/captain) [![Coverage Status](https://coveralls.io/repos/github/harbur/captain/badge.svg?branch=master)](https://coveralls.io/github/harbur/captain?branch=master)
+# Captain
 
-# Introduction
+## Introduction
 
 Captain - Convert your Git workflow to Docker containers ready for Continuous Delivery
 
@@ -12,19 +12,21 @@ Define your workflow in the `captain.yaml` and use captain to your Continuous De
 
 From the other side, you can now pull the feature branch you want to test, or create distribution channels (such as 'alpha', 'beta', 'stable') using git tags that are propagated to container tags.
 
-![intro](https://cloud.githubusercontent.com/assets/367397/6997822/c9aeadd8-dbcb-11e4-9901-dd62bcb33e5e.gif)
-
 ## Installation
 
-To install Captain, run:
+### Github Releases
+
+`captain` binaries can be download in each github release
+
+### Homebrew
+
 ```
-curl -sSL https://raw.githubusercontent.com/harbur/captain/v1.1.2/install.sh | bash
+$ brew install guilhem/homebrew-tap/bump
 ```
 
-You will need to add `~/.captain/bin` in your `PATH`. E.g. in your `.bashrc` or `.zshrc` add:
-```
-export PATH=$HOME/.captain/bin:$PATH
-```
+### Docker
+
+use image [`guilhem/captain`](https://hub.docker.com/repository/docker/guilhem/captain)
 
 ## Captain.yml Format
 
@@ -35,14 +37,14 @@ Here is a full `captain.yml` example:
 ```yaml
 hello-world:
   build: Dockerfile
-  image: harbur/hello-world
+  image: guilhem/hello-world
   pre:
     - echo "Preparing hello-world"
   post:
     - echo "Finished hello-world"
 hello-world-test:
   build: Dockerfile.test
-  image: harbur/hello-world-test
+  image: guilhem/hello-world-test
   pre:
     - echo "Preparing hello-world-test"
   post:
@@ -50,6 +52,14 @@ hello-world-test:
   test:
     - docker run -e NODE_ENV=TEST harbur/hello-world-test node mochaTest
     - docker run -e NODE_ENV=TEST harbur/hello-world-test node karmaTest
+hello-world-with-context:
+  context: myDir
+  build: Dockerfile
+  image: guilhem/helly-context
+hello-world-with-dependancies:
+  build: Dockerfile.sup
+  wants:
+    - hello-world
 project-with-build-args:
   build: Dockerfile
   image: harbur/buildargs
@@ -73,7 +83,7 @@ Where
   - Lower-cased to avoid invalid repository names (Repository names support only lowercase letters, digits and _ - . characters are allowed)
 
 ```yaml
-image: harbur/hello-world
+image: guilhem/hello-world
 ```
 
 ### build
@@ -102,8 +112,8 @@ A list of commands that are run as tests after the compilation of the specific i
 
 ```yaml
 test:
-  - docker run -e NODE_ENV=TEST harbur/hello-world-test node mochaTest
-  - docker run -e NODE_ENV=TEST harbur/hello-world-test node karmaTest
+  - docker run -e NODE_ENV=TEST guilhem/hello-world-test node mochaTest
+  - docker run -e NODE_ENV=TEST guilhem/hello-world-test node karmaTest
 ```
 
 ### pre
@@ -146,6 +156,7 @@ Flags:
 ```
 -B, --all-branches=false: Build all branches on specific commit instead of just working branch
 -f, --force=false: Force build even if image is already built
+-t, --tag strinf: Tag version
 ```
 
 ### test
@@ -186,10 +197,6 @@ Flags:
 -c, --commit-tags=false: Pull the 'commit' docker tags. If branch-tags=true, it also pulls the 'branch-commit' docker tags
 ```
 
-### self-update
-
-Updates Captain to the last available version.
-
 ### version
 
 Display version
@@ -208,6 +215,7 @@ Simply type `captain help [path to command]` for full details.
 -D, --debug=false: Enable debug mode
 -h, --help=false: help for captain
 -N, --namespace="username": Set default image namespace
+-l, --long-sha=false: Use the long git commit SHA when referencing revisions
 ```
 
 ## Docker Tags Lifecycle
@@ -217,14 +225,3 @@ The following is the workflow of tagging Docker images according to git state.
 - If you're in non-git repository, captain will tag the built images with `latest`.
 - If you're in dirty-git repository, captain will tag the built images with `latest`.
 - If you're in pristine-git repository, captain will tag the built images with `latest`, `commit-id`, `branch-name`, `branch-name-commit-id`, `tag-name`. A maximum of one tag per commit id is supported.
-
-## Roadmap
-
-Here are some of the features pending to be implemented:
-
-* Environment variables to set captain flags
-* Implementation of `captain detect` that outputs the generated `captain.yml` with auto-detected content.
-* Implementation of `captain ci [travis|circle|etc.]` to output configuration wrappers for each CI service
-* Configure which images are to be pushed (e.g. to exclude test images)
-* Configure which tag regex are to be pushed (e.g. to exclude development sandbox branches)
-

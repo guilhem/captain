@@ -10,40 +10,42 @@ builds:
     binary: captain
     env:
       - CGO_ENABLED=0
-archive:
-  format: binary
-  replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
+archives:
+  - format: binary
+    replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
 checksum:
   name_template: "checksums.txt"
 snapshot:
   name_template: "{{ .Tag }}-next"
 
-snapcraft:
-  publish: false
-  summary: Software to create fast and easy drum rolls.
-  description: |
-    This is the best drum roll application out there.
-    Install it and awe!
-  grade: devel
-  confinement: devmode
-  apps:
-    captain:
-      plugs: ["home", "docker", "system-files"]
-  plugs:
-    system-files:
-      write: ["/var/run/docker.sock"]
-brew:
-  github:
-    owner: barpilot
-    name: homebrew-tap
-  folder: Formula
-  homepage: https://barpilot.io
-  description: "Software to create fast and easy drum rolls."
+snapcrafts:
+  - publish: false
+    summary: Convert your Git workflow to Docker containers ready for Continuous Delivery.
+    description: |
+      This is the best drum roll application out there.
+      Install it and awe!
+    grade: devel
+    confinement: devmode
+    apps:
+      captain:
+        plugs: ["home", "docker", "system-files"]
+    plugs:
+      system-files:
+        write: ["/var/run/docker.sock"]
+brews:
+  - github:
+      owner: guilhem
+      name: homebrew-tap
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@barpilot.io
+    homepage: "https://github.com/guilhem/captain"
+    description: "Convert your Git workflow to Docker containers ready for Continuous Delivery."
 changelog:
   sort: asc
   filters:
