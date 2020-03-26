@@ -82,4 +82,5 @@ dockers:
       - "barpilot/captain:latest"
       - "barpilot/captain:{{ .Tag }}"
       - "barpilot/captain:{{ .Major }}"
+      - "barpilot/captain:{{ .ShortCommit }}"
     dockerfile: Dockerfile.goreleaser
