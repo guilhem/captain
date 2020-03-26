@@ -1,10 +1,9 @@
- 
 name: release
 
 on:
   push:
     tags:
-    - '*'
+      - "*"
 
 jobs:
   release:
@@ -21,8 +20,6 @@ jobs:
         run: sudo snap install snapcraft --classic
       - name: Add snapcraft to PATH
         run: sudo ln -fs /snap/bin/snapcraft /usr/local/bin/snapcraft
-      - name: Snapcraft login
-        run: echo "${{ secrets.SNAPCRAFT_TOKEN }}" | snapcraft login --with -
       - uses: azure/docker-login@v1
         with:
           username: "guilhem"
@@ -34,3 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GO111MODULE: on
+      - name: Snapcraft login
+        run: echo "${{ secrets.SNAPCRAFT_TOKEN }}" | snapcraft login --with -
+      - name: Release snap
+        run: snapcraft push dist/*.snap --release stable

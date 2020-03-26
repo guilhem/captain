@@ -36,7 +36,8 @@ snapshot:
   name_template: "{{ .Tag }}-next"
 
 snapcrafts:
-  - summary: Convert your Git workflow to Docker containers ready for Continuous Delivery.
+  - publish: false
+    summary: Convert your Git workflow to Docker containers ready for Continuous Delivery.
     description: |
       This is the best drum roll application out there.
       Install it and awe!
